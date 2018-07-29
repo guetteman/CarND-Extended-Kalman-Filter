@@ -63,6 +63,13 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   double vy = x_(3);
 
   double rho = sqrt(px * px + py * py);
+
+  if(rho < .00001) {
+    px += .001;
+    py += .001;
+    rho = sqrt(px * px + py * py);
+  }
+
   double phi = atan2(py, px);
   double rho_dot = (px * vx + py * vy) / rho;
 
@@ -73,10 +80,10 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
   // Normalize the angle
   while (y(1) > M_PI) {
-    y(1) -= M_PI;
+    y(1) -= 2*M_PI;
   }
   while (y(1) < - M_PI) {
-    y(1) += M_PI;
+    y(1) += 2*M_PI;
   }
 
   MatrixXd Ht = H_.transpose();
